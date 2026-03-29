@@ -413,6 +413,7 @@ function connectWS() {
     const msg = JSON.parse(e.data);
 
     if (msg.type === 'admitted') {
+      document.getElementById('lobby').style.display = 'none';
       document.getElementById('waiting-screen').style.display = 'none';
       document.getElementById('game-screen').style.display = 'grid';
       loadHistory(); loadScores(); initGame();
@@ -442,26 +443,9 @@ function connectWS() {
     }
     if (msg.type === 'admin_teleport') { session.room = msg.room; location.reload(); }
     if (msg.type === 'admin_control') { handleAdminControl(msg.input); }
-
-    // Direct: check if room is full for public rooms
-    if (!document.getElementById('game-screen').style.display || document.getElementById('game-screen').style.display === 'none') {
-      if (!document.getElementById('waiting-screen').style.display || document.getElementById('waiting-screen').style.display === 'none') {
-        document.getElementById('game-screen').style.display = 'grid';
-        loadHistory(); loadScores(); initGame();
-      }
-    }
   };
 
   ws.onclose = () => setTimeout(connectWS, 2000);
-
-  // Show game screen if not waiting
-  setTimeout(() => {
-    if (document.getElementById('game-screen').style.display !== 'grid' &&
-        document.getElementById('waiting-screen').style.display !== 'flex') {
-      document.getElementById('game-screen').style.display = 'grid';
-      loadHistory(); loadScores(); initGame();
-    }
-  }, 800);
 }
 
 function updateDots(count) {
