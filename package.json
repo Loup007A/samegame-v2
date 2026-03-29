@@ -1,0 +1,25 @@
+{
+  "name": "same-game",
+  "version": "1.0.0",
+  "description": "Multiplayer game where everyone plays a different game without knowing it",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.6",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "lowdb": "^1.0.0",
+    "uuid": "^9.0.0",
+    "ws": "^8.20.0"
+  },
+  "devDependencies": {
+    "acorn": "^8.16.0"
+  }
+}
