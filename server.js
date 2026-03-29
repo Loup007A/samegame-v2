@@ -479,6 +479,10 @@ app.get('/api/admin/stats', requireAdmin, (req, res) => {
   res.json({ totalPlayers, totalMessages, onlineCount, roomCounts });
 });
 
+app.get('/cron', (req, res) => {
+  res.status(200).send('OK');
+});
+
 // ── WebSocket ─────────────────────────────────────────────────────────────────
 const rooms = {};        // roomName -> Set<ws>
 const playerWsMap = {};  // playerId -> ws
