@@ -499,6 +499,9 @@ wss.on('connection', (ws) => {
       rooms[ws.room].add(ws);
       if (ws.playerId) playerWsMap[ws.playerId] = ws;
 
+      // Tell THIS player they are admitted so the game screen shows
+      ws.send(JSON.stringify({ type: 'admitted' }));
+
       broadcast(ws.room, { type: 'system', content: `${ws.nickname} joined the room.` }, null);
       broadcastCount(ws.room);
     }
