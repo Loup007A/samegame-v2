@@ -591,5 +591,18 @@ app.get('/join/:code', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// Route /cron
+app.get('/cron', (req, res) => {
+    console.log('Cron exécuté à', new Date());
+
+    // 👉 Mets ici ton code à exécuter
+    // Exemple :
+    // - nettoyer une base de données
+    // - appeler une API
+    // - envoyer des emails
+
+    res.status(200).send('Cron exécuté');
+});
+
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`🎮 SAME GAME → http://localhost:${PORT}`));
