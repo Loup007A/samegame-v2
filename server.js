@@ -604,5 +604,9 @@ app.get('/cron', (req, res) => {
     res.status(200).send('Cron exécuté');
 });
 
+app.get('/sitemap.xml', (req, res) => {
+  res.sendFile(__dirname + '/sitemap.xml');
+});
+
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`🎮 SAME GAME → http://localhost:${PORT}`));
