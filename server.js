@@ -608,5 +608,9 @@ app.get('/sitemap.xml', (req, res) => {
   res.sendFile(__dirname + '/sitemap.xml');
 });
 
+app.get('/about', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'about.html'));
+});
+
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`🎮 SAME GAME → http://localhost:${PORT}`));
