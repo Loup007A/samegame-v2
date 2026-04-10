@@ -6,5 +6,9 @@
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
+  <url>
+    <loc>https://samegame-v2.onrender.com/about</loc>
+    <changefreq>monthly</changefreq>
+  </url>
 
 </urlset>
