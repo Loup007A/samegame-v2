@@ -131,3 +131,5 @@ Par défaut : aléatoire. Tu peux remplacer par une logique basée sur l'heure, 
 - Que leur jeu est différent de celui du voisin
 - Que les "scores" dans le leaderboard viennent de jeux complètement différents
 - Que quand ils demandent "t'as passé quel niveau ?" dans le chat, personne ne joue au même jeu
+
+https://samegame-v2.onrender.com/
