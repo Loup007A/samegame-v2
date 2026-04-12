@@ -14,7 +14,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 
-  .site-footer {
+  .site-footer:hover {
     position: fixed;
     bottom: 0;
     left: 0;
@@ -29,6 +29,7 @@
   
     padding: 12px 20px;
     border-top: 1px solid #30363d;
+    opacity: 0.7;
   
     z-index: 9999;
   }
@@ -42,8 +43,24 @@
     transition: opacity 0.2s ease;
   }
   
-  .site-footer a:hover {
+  .site-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(13, 17, 23, 0.95);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    font-size: 0px;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+  
+    padding: 12px 20px;
+    border-top: 0.1px solid #30363d;
     opacity: 0.7;
+  
+    z-index: 9999;
   }
   
   /* mobile */
