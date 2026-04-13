@@ -5,6 +5,58 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Simulation de Fluide SPH</title>
   <style>
+    /* ── FOOTER ── */
+    .site-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 10px;
+      background: transparent;
+      border: none;
+      opacity: 0.2;
+      pointer-events: auto;
+      transition: all 0.25s ease;
+    }
+    .site-footer::before {
+      content: 'Voir plus';
+      color: gray;
+      font-size: 13px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.05);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .site-footer:hover {
+      opacity: 1;
+      background: rgba(13, 17, 23, 0.95);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-top: 1px solid #30363d;
+      border-right: 1px solid #30363d;
+      border-radius: 0 8px 0 0;
+      padding: 10px 14px;
+    }
+    .site-footer:hover::before { display: none; }
+    .site-footer a {
+      color: #58a6ff;
+      text-decoration: none;
+      font-size: 13px;
+      font-family: Arial, sans-serif;
+      opacity: 0;
+      transform: translateY(5px);
+      transition: all 0.2s ease;
+    }
+    .site-footer:hover a { opacity: 1; transform: translateY(0); }
+    .site-footer a:hover { opacity: 0.75; text-decoration: underline; }
+    @media (max-width: 600px) {
+      .site-footer { left: 0; right: 0; justify-content: center; }
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       background: #060a12;
@@ -267,4 +319,11 @@
   loop();
 </script>
 </body>
+<footer class="site-footer">
+  <a href="/about">À propos</a>
+  <a href="/how-to-play">Comment jouer</a>
+  <a href="/fractales">Fractales</a>
+  <a href="/gravite">Gravité</a>
+  <a href="/fluide">Fluide</a>
+</footer>
 </html>
