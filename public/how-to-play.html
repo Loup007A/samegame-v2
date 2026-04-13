@@ -12,46 +12,58 @@
   <meta property="og:description" content="Comprendre le système de jeu procédural et les règles de Same Game">
 
   <style>
+    /* ── FOOTER ── */
     .site-footer {
       position: fixed;
       bottom: 0;
       left: 0;
-      width: 100%;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 10px;
+      background: transparent;
+      border: none;
+      opacity: 0.2;
+      pointer-events: auto;
+      transition: all 0.25s ease;
+    }
+    .site-footer::before {
+      content: 'Voir plus';
+      color: gray;
+      font-size: 13px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.05);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .site-footer:hover {
+      opacity: 1;
       background: rgba(13, 17, 23, 0.95);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
-    
-      display: flex;
-      justify-content: center;
-      gap: 30px;
-    
-      padding: 12px 20px;
       border-top: 1px solid #30363d;
-    
-      z-index: 9999;
+      border-right: 1px solid #30363d;
+      border-radius: 0 8px 0 0;
+      padding: 10px 14px;
     }
-    
-    /* liens */
+    .site-footer:hover::before { display: none; }
     .site-footer a {
       color: #58a6ff;
       text-decoration: none;
-      font-size: 14px;
+      font-size: 13px;
       font-family: Arial, sans-serif;
-      transition: opacity 0.2s ease;
+      opacity: 0;
+      transform: translateY(5px);
+      transition: all 0.2s ease;
     }
-    
-    .site-footer a:hover {
-      opacity: 0.7;
-    }
-    
-    /* mobile */
+    .site-footer:hover a { opacity: 1; transform: translateY(0); }
+    .site-footer a:hover { opacity: 0.75; text-decoration: underline; }
     @media (max-width: 600px) {
-      .site-footer {
-        gap: 15px;
-        font-size: 12px;
-        padding: 10px;
-      }
+      .site-footer { left: 0; right: 0; justify-content: center; }
     }
+
     body {
       font-family: Arial, sans-serif;
       background: #0d1117;
