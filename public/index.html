@@ -14,78 +14,87 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 
-  /* ── FOOTER ── 
-     Rendu minuscule par défaut, visible au survol uniquement.
-     Positionné EN DEHORS du flux du chat-panel grâce à pointer-events:none
-     pour ne jamais bloquer les clics quand il est réduit.
-  */
+.site-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 6px 10px;
+  background: transparent;
+  border: none;
+
+  opacity: 0.2;                 /* légèrement visible */
+  pointer-events: auto;         /* IMPORTANT pour hover */
+  transition: all 0.25s ease;
+}
+
+/* Zone visible (trigger) */
+.site-footer::before {
+  content: 'Voir plus';
+  color: gray;
+  font-size: 13px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.05);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Hover global */
+.site-footer:hover {
+  opacity: 1;
+  background: rgba(13, 17, 23, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  border-top: 1px solid #30363d;
+  border-right: 1px solid #30363d;
+  border-radius: 0 8px 0 0;
+
+  padding: 10px 14px;
+}
+
+/* Cache le bouton */
+.site-footer:hover::before {
+  display: none;
+}
+
+/* Liens */
+.site-footer a {
+  color: #58a6ff;
+  text-decoration: none;
+  font-size: 13px;
+  font-family: Arial, sans-serif;
+
+  opacity: 0;
+  transform: translateY(5px);
+  transition: all 0.2s ease;
+}
+
+/* Apparition fluide */
+.site-footer:hover a {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.site-footer a:hover {
+  opacity: 0.75;
+  text-decoration: underline;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
   .site-footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;                  /* ancré à droite pour ne pas couvrir le chat */
-    width: auto;
-    background: transparent;
-    display: flex;
-    gap: 12px;
-    padding: 4px 10px;
-    border: none;
-    z-index: 9999;
-     /* invisible = non-cliquable, ne bloque rien */
-    opacity: 0;
-    transition: opacity 0.25s ease;
+    left: 0;
+    right: 0;
+    justify-content: center;
   }
-
-  /* Petite zone de survol (bouton "⋯") pour révéler les liens */
-  .site-footer::before {
-    content: 'Voir plus';
-    color: gray;
-    font-size: 18px;
-    padding: 2px 6px;
-    border-radius: 4px;
-    transition: color 0.2s;
-  }
-
-  .site-footer:hover {
-    opacity: 1;
-    pointer-events: auto;
-    background: rgba(13, 17, 23, 0.95);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border-top: 1px solid #30363d;
-    border-left: 1px solid #30363d;
-    border-radius: 8px 0 0 0;
-    padding: 8px 14px;
-  }
-
-  .site-footer:hover::before {
-    display: none;
-  }
-
-  .site-footer a {
-    color: #58a6ff;
-    text-decoration: none;
-    font-size: 13px;
-    font-family: Arial, sans-serif;
-    transition: opacity 0.2s ease;
-    pointer-events: auto;
-    display: none;             /* caché par défaut */
-  }
-
-  .site-footer:hover a {
-    display: inline;           /* visible au survol */
-  }
-
-  .site-footer a:hover {
-    opacity: 0.75;
-    text-decoration: underline;
-  }
-
-  @media (max-width: 600px) {
-    .site-footer {
-      right: auto;
-      left: 0;
-    }
-  }
+}
 
   
   :root {
