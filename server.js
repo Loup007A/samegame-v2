@@ -616,5 +616,9 @@ app.get('/how-to-play', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'how-to-play.html'));
 });
 
+app.get('/fractales', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'fractales.html'));
+});
+
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`🎮 SAME GAME → http://localhost:${PORT}`));
