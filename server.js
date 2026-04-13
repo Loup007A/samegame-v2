@@ -620,5 +620,13 @@ app.get('/fractales', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'fractales.html'));
 });
 
+app.get('/fluide', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'fluide_sph.html'));
+});
+
+app.get('/gravite', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'nbody_gravite.html'));
+});
+
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`🎮 SAME GAME → http://localhost:${PORT}`));
