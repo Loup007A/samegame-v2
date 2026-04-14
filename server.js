@@ -636,5 +636,12 @@ app.get('/samegame-online', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'samegame-online.html'));
 });
 
+// 404 handler (toujours en dernier)
+app.use((req, res) => {
+  res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
+});
+
+
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`🎮 SAME GAME → http://localhost:${PORT}`));
+
