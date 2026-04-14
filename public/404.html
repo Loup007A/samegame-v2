@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>404 - Monde introuvable | Same Game</title>
+  <title>404 - Réalité instable | Same Game</title>
 
   <meta name="robots" content="noindex">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,83 +17,77 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
+      text-align: center;
     }
 
     .container {
-      text-align: center;
       max-width: 600px;
       padding: 20px;
-      animation: fadeIn 1.5s ease;
     }
 
     h1 {
       font-size: 80px;
-      margin: 0;
       color: #ff4d4d;
-      text-shadow: 0 0 20px rgba(255, 77, 77, 0.6);
+      margin: 0;
     }
 
     h2 {
-      margin-top: 10px;
       color: #58a6ff;
-      font-weight: normal;
     }
 
     p {
-      opacity: 0.8;
-      margin-top: 20px;
-      line-height: 1.5;
+      opacity: 0.85;
     }
 
-    .glitch {
-      font-size: 14px;
-      margin-top: 15px;
-      opacity: 0.5;
-      font-family: monospace;
-      animation: flicker 2s infinite;
+    .cookie {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: #c68642;
+      margin: 20px auto;
+      cursor: pointer;
+      position: relative;
+      box-shadow: inset -8px -8px 0 rgba(0,0,0,0.2);
+      transition: transform 0.1s;
+    }
+
+    .cookie:active {
+      transform: scale(0.9);
+    }
+
+    .chip {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: #5a3a1b;
+      border-radius: 50%;
+    }
+
+    .score {
+      font-size: 20px;
+      margin-top: 10px;
     }
 
     .btn {
       display: inline-block;
-      margin-top: 30px;
-      padding: 12px 25px;
-      background: #238636;
-      color: white;
-      border-radius: 6px;
-      text-decoration: none;
-      font-weight: bold;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 0 10px rgba(35, 134, 54, 0.6);
-    }
-
-    .links {
       margin-top: 20px;
-    }
-
-    .links a {
-      color: #58a6ff;
-      margin: 0 10px;
+      padding: 10px 20px;
+      background: #238636;
+      border-radius: 6px;
+      color: white;
       text-decoration: none;
-      font-size: 14px;
     }
 
-    .links a:hover {
-      text-decoration: underline;
+    .floating {
+      position: absolute;
+      font-size: 18px;
+      animation: floatUp 1s ease-out forwards;
+      pointer-events: none;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
-    @keyframes flicker {
-      0%, 100% { opacity: 0.4; }
-      50% { opacity: 0.1; }
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-50px); }
     }
   </style>
 </head>
@@ -101,31 +95,65 @@
 <body>
 
 <div class="container">
-
   <h1>404</h1>
-  <h2>Monde introuvable</h2>
+  <h2>Réalité instable détectée</h2>
 
-  <p>
-    Cette page n'existe pas… ou peut-être qu’elle existe, mais pas dans ta version du jeu.
-  </p>
+  <p>Tu as trouvé une zone cachée du système…</p>
 
-  <p>
-    Dans Same Game, chaque joueur voit une réalité différente.
-    Tu viens peut-être de tomber sur une dimension qui n’est pas la tienne.
-  </p>
+  <div id="gameArea"></div>
 
-  <div class="glitch">
-    seed_error_#7F3A9C… world_not_found…
-  </div>
-
-  <a href="/" class="btn">🎮 Revenir au jeu</a>
-
-  <div class="links">
-    <a href="/how-to-play">Comment jouer</a>
-    <a href="/about">À propos</a>
-  </div>
-
+  <a href="/" class="btn">🎮 Retour au jeu principal</a>
 </div>
+
+<script>
+let score = 0;
+
+const gameArea = document.getElementById("gameArea");
+
+// 🎲 50% chance d'avoir le mini-jeu
+if (Math.random() < 0.5) {
+  spawnCookieGame();
+} else {
+  gameArea.innerHTML = "<p>🔒 Aucun module de réalité stable chargé.</p>";
+}
+
+function spawnCookieGame() {
+  const cookie = document.createElement("div");
+  cookie.className = "cookie";
+
+  // petits chips décoratifs
+  for (let i = 0; i < 6; i++) {
+    const chip = document.createElement("div");
+    chip.className = "chip";
+    chip.style.left = Math.random() * 100 + "px";
+    chip.style.top = Math.random() * 100 + "px";
+    cookie.appendChild(chip);
+  }
+
+  const scoreText = document.createElement("div");
+  scoreText.className = "score";
+  scoreText.innerText = "Score : 0";
+
+  cookie.onclick = (e) => {
+    score++;
+
+    scoreText.innerText = "Score : " + score;
+
+    // effet +1 flottant
+    const float = document.createElement("div");
+    float.className = "floating";
+    float.innerText = "+1";
+    float.style.left = (e.pageX - 10) + "px";
+    float.style.top = (e.pageY - 10) + "px";
+    document.body.appendChild(float);
+
+    setTimeout(() => float.remove(), 1000);
+  };
+
+  gameArea.appendChild(cookie);
+  gameArea.appendChild(scoreText);
+}
+</script>
 
 </body>
 </html>
