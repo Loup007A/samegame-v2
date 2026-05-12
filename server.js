@@ -34,10 +34,21 @@ db.defaults({
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 const GAME_TYPES = ['dodge', 'breakout', 'memory', 'quiz', 'snake', 'tetris', 'flappy', 'bubble'];
-const PUBLIC_ROOMS = ['arcade', 'lounge', 'arena', 'tavern', 'dungeon', 'nexus'];
 const ROOM_MAX = 20;
 const ADMIN_USERNAME = 'Loup007A';
 const ADMIN_SALT = 'samegame-admin-salt-2024';
+
+// ── Global room assignment ─────────────────────────────────────────────────────
+// Players always go to "global-1". If it has 20 connected players, use "global-2", etc.
+function getGlobalRoom() {
+  let n = 1;
+  while (true) {
+    const roomName = `global-${n}`;
+    const count = rooms[roomName]?.size || 0;
+    if (count < ROOM_MAX) return roomName;
+    n++;
+  }
+}
 
 function sha256(str) {
   return crypto.createHash('sha256').update(str).digest('hex');
@@ -176,12 +187,14 @@ function generateGameConfig(seed, type) {
 }
 
 // ── Player helpers ────────────────────────────────────────────────────────────
-function getOrCreatePlayer(primaryId, ip, fingerprint, accountId = null) {
+function getOrCreatePlayer(primaryId, ip, fingerprint, accountId = null, pickedGame = null) {
   let player = db.get('players').find({ id: primaryId }).value();
   if (!player) {
     const seed = Math.floor(Math.random() * 2147483647);
-    const type = GAME_TYPES[Math.floor(Math.random() * GAME_TYPES.length)];
-    const room = PUBLIC_ROOMS[Math.floor(Math.random() * PUBLIC_ROOMS.length)];
+    // Use pickedGame if provided, otherwise random
+    const type = (pickedGame && GAME_TYPES.includes(pickedGame)) ? pickedGame : GAME_TYPES[Math.floor(Math.random() * GAME_TYPES.length)];
+    // Room is always assigned at join-time from getGlobalRoom(), placeholder here
+    const room = 'global-1';
     player = {
       id: primaryId, ip, fingerprint, game_seed: seed, game_type: type, room,
       score: 0, scoreMultiplier: 1, nickname: `Player_${primaryId.slice(0, 4)}`,
@@ -190,7 +203,14 @@ function getOrCreatePlayer(primaryId, ip, fingerprint, accountId = null) {
     };
     db.get('players').push(player).write();
   } else {
-    db.get('players').find({ id: primaryId }).assign({ last_seen: Date.now(), ip }).write();
+    // Update game type if player chose a new one
+    const updates = { last_seen: Date.now(), ip };
+    if (pickedGame && GAME_TYPES.includes(pickedGame)) {
+      const newSeed = Math.floor(Math.random() * 2147483647);
+      updates.game_type = pickedGame;
+      updates.game_seed = newSeed;
+    }
+    db.get('players').find({ id: primaryId }).assign(updates).write();
   }
   return db.get('players').find({ id: primaryId }).value();
 }
@@ -209,22 +229,24 @@ async function verifyPassword(password, storedHash) {
 // Session
 app.post('/api/session', (req, res) => {
   const { ip, fingerprint, primaryId } = getPlayerIdentity(req);
-  const { nickname, accountId } = req.body;
+  const { nickname, accountId, pickedGame } = req.body;
   try {
-    // Check ban
     const banEntry = db.get('bans').find(b => b.playerId === primaryId && (!b.expiresAt || b.expiresAt > Date.now())).value();
     if (banEntry) return res.status(403).json({ error: 'banned', reason: banEntry.reason });
 
-    const player = getOrCreatePlayer(primaryId, ip, fingerprint, accountId);
+    const player = getOrCreatePlayer(primaryId, ip, fingerprint, accountId, pickedGame);
     const config = generateGameConfig(player.game_seed, player.game_type);
     if (nickname) db.get('players').find({ id: primaryId }).assign({ nickname }).write();
 
-    // Set persistent cookie (30 days)
+    // Assign to the least-full global room
+    const assignedRoom = getGlobalRoom();
+    db.get('players').find({ id: primaryId }).assign({ room: assignedRoom }).write();
+
     res.cookie('sgid', primaryId, { maxAge: 30 * 24 * 3600 * 1000, httpOnly: true, signed: true });
 
     res.json({
       playerId: player.id,
-      room: player.room,
+      room: assignedRoom,
       gameConfig: config,
       nickname: nickname || player.nickname,
       scoreMultiplier: player.scoreMultiplier || 1,
@@ -475,7 +497,7 @@ app.get('/api/admin/stats', requireAdmin, (req, res) => {
   const totalMessages = db.get('messages').size().value();
   const onlineCount = Object.values(rooms).reduce((sum, s) => sum + s.size, 0);
   const roomCounts = {};
-  PUBLIC_ROOMS.forEach(r => { roomCounts[r] = rooms[r]?.size || 0; });
+  Object.entries(rooms).forEach(([name, set]) => { roomCounts[name] = set.size; });
   res.json({ totalPlayers, totalMessages, onlineCount, roomCounts });
 });
 
@@ -591,57 +613,5 @@ app.get('/join/:code', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Route /cron
-app.get('/cron', (req, res) => {
-    console.log('Cron exécuté à', new Date());
-
-    // 👉 Mets ici ton code à exécuter
-    // Exemple :
-    // - nettoyer une base de données
-    // - appeler une API
-    // - envoyer des emails
-
-    res.status(200).send('Cron exécuté');
-});
-
-app.get('/sitemap.xml', (req, res) => {
-  res.sendFile(__dirname + '/sitemap.xml');
-});
-
-app.get('/about', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'about.html'));
-});
-
-app.get('/how-to-play', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'how-to-play.html'));
-});
-
-app.get('/fractales', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'fractales.html'));
-});
-
-app.get('/fluide', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'fluide_sph.html'));
-});
-
-app.get('/gravite', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'nbody_gravite.html'));
-});
-
-app.get('/synthetiseur', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'synthetiseur.html'));
-});
-
-app.get('/samegame-online', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'samegame-online.html'));
-});
-
-// 404 handler (toujours en dernier)
-app.use((req, res) => {
-  res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
-});
-
-
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`🎮 SAME GAME → http://localhost:${PORT}`));
-
