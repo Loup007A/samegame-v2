@@ -33,7 +33,7 @@ db.defaults({
 }).write();
 
 // ── Constants ─────────────────────────────────────────────────────────────────
-const GAME_TYPES = ['dodge', 'breakout', 'memory', 'quiz', 'snake', 'tetris', 'flappy', 'bubble'];
+const GAME_TYPES = ['dodge','breakout','memory','quiz','snake','tetris','flappy','bubble','pong','asteroids','simon','typing','platformer','colormath','minesweeper','pacman'];
 const ROOM_MAX = 20;
 const ADMIN_USERNAME = 'Loup007A';
 const ADMIN_SALT = 'samegame-admin-salt-2024';
@@ -181,6 +181,42 @@ function generateGameConfig(seed, type) {
       fallSpeed: 0.5 + rng() * 1.5,
       palette,
     },
+    pong: {
+      ballSpeed: 5 + Math.floor(rng() * 4),
+      aiSpeed: 0.06 + rng() * 0.08,
+      palette,
+    },
+    asteroids: {
+      startAsteroids: 4 + Math.floor(rng() * 3),
+      bulletSpeed: 9 + Math.floor(rng() * 3),
+      palette,
+    },
+    simon: {
+      startSpeed: 700 - Math.floor(rng() * 200),
+      palette,
+    },
+    typing: {
+      wordCount: 15 + Math.floor(rng() * 10),
+      timeLimit: 90 + Math.floor(rng() * 60),
+      palette,
+    },
+    platformer: {
+      gravity: 0.4 + rng() * 0.2,
+      startLevels: 1,
+      palette,
+    },
+    colormath: {
+      timeLimit: 8 + Math.floor(rng() * 8),
+      palette,
+    },
+    minesweeper: {
+      mines: 25 + Math.floor(rng() * 15),
+      palette,
+    },
+    pacman: {
+      ghostSpeed: 10 + Math.floor(rng() * 4),
+      palette,
+    },
   };
 
   return { type, seed, palette, ...configs[type] };
@@ -319,20 +355,40 @@ app.post('/api/private-room/create', (req, res) => {
     id: roomId, code, createdBy: playerId, creatorNickname: nickname,
     players: [], createdAt: Date.now(),
   }).write();
-  res.json({ roomId, code, link: `/join/${code}` });
+  res.json({ roomId, code, link: `/join/${code}`, isRoomAdmin: true });
 });
 
 app.post('/api/private-room/join', (req, res) => {
   const { code } = req.body;
   const room = db.get('private_rooms').find({ code: code.toUpperCase() }).value();
   if (!room) return res.status(404).json({ error: 'Room not found' });
-  res.json({ roomId: room.id, code: room.code });
+  res.json({ roomId: room.id, code: room.code, isRoomAdmin: false });
 });
 
 app.get('/api/private-room/:roomId', (req, res) => {
   const room = db.get('private_rooms').find({ id: req.params.roomId }).value();
   if (!room) return res.status(404).json({ error: 'Not found' });
   res.json(room);
+});
+
+// Room admin changes the game for everyone in the room (silently)
+app.post('/api/private-room/change-game', (req, res) => {
+  const { roomId, playerId, gameType } = req.body;
+  const room = db.get('private_rooms').find({ id: roomId }).value();
+  if (!room) return res.status(404).json({ error: 'Not found' });
+  if (room.createdBy !== playerId) return res.status(403).json({ error: 'Not room admin' });
+  if (!GAME_TYPES.includes(gameType)) return res.status(400).json({ error: 'Invalid game' });
+
+  // Push new game to all members of this room via WS (silently — no announcement)
+  const newSeed = Math.floor(Math.random() * 2147483647);
+  if (rooms[roomId]) {
+    rooms[roomId].forEach(ws => {
+      if (ws.playerId !== playerId && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: 'admin_force_game', gameType, seed: newSeed }));
+      }
+    });
+  }
+  res.json({ ok: true });
 });
 
 // ── Admin API ─────────────────────────────────────────────────────────────────
@@ -611,6 +667,29 @@ function kickPlayer(playerId, reason) {
 // ── Join private room via link ─────────────────────────────────────────────────
 app.get('/join/:code', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// ── Static pages ──────────────────────────────────────────────────────────────
+const staticPages = {
+  '/about':           'about.html',
+  '/how-to-play':     'how-to-play.html',
+  '/fractales':       'fractales.html',
+  '/gravite':         'nbody_gravite.html',
+  '/fluide':          'fluide_sph.html',
+  '/synthetiseur':    'synthetiseur.html',
+  '/samegame-online': 'samegame-online.html',
+};
+Object.entries(staticPages).forEach(([route, file]) => {
+  app.get(route, (req, res) => res.sendFile(path.join(__dirname, 'public', file)));
+});
+
+app.get('/sitemap.xml', (req, res) => {
+  res.sendFile(path.join(__dirname, 'sitemap.xml'));
+});
+
+// 404
+app.use((req, res) => {
+  res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
 });
 
 const PORT = process.env.PORT || 3000;
