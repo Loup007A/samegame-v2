@@ -3,6 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Jouez à SameGame en ligne gratuitement. Jeu multijoueur dans le navigateur avec une expérience unique pour chaque joueur.">
+<meta name="keywords" content="samegame en ligne, jeu samegame gratuit, jeu puzzle navigateur, samegame multijoueur">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="SameGame en ligne gratuit">
+<meta property="og:description" content="Jouez à SameGame gratuitement dans votre navigateur">
+<meta property="og:url" content="https://samegame-v2.onrender.com">
+<!-- Clarity tracking code for https://samegame-v2.onrender.com/ -->
+<script>
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i+"?ref=bwt";
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "wbmwkf2g25");
+</script>
 <title>SAME GAME</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -153,6 +167,57 @@
   .cap-dot.active { background:var(--secondary); }
   .cap-dot.full { background:var(--primary); }
 
+  /* ── FOOTER ── */
+  .site-footer {
+    position: fixed; bottom: 0; left: 0; z-index: 9999;
+    display: flex; align-items: center; gap: 12px;
+    padding: 6px 10px; background: transparent; border: none;
+    opacity: 0.2; pointer-events: auto; transition: all 0.25s ease;
+  }
+  .site-footer::before {
+    content: 'Voir plus'; color: gray; font-size: 13px;
+    padding: 4px 8px; border-radius: 4px;
+    background: rgba(255,255,255,0.05); cursor: pointer; transition: all 0.2s ease;
+  }
+  .site-footer:hover {
+    opacity: 1; background: rgba(13,17,23,0.95);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    border-top: 1px solid #30363d; border-right: 1px solid #30363d;
+    border-radius: 0 8px 0 0; padding: 10px 14px;
+  }
+  .site-footer:hover::before { display: none; }
+  .site-footer a {
+    color: #58a6ff; text-decoration: none; font-size: 13px;
+    font-family: Arial, sans-serif; opacity: 0;
+    transform: translateY(5px); transition: all 0.2s ease;
+  }
+  .site-footer:hover a { opacity: 1; transform: translateY(0); }
+  .site-footer a:hover { opacity: 0.75; text-decoration: underline; }
+
+  /* ── ROOM ADMIN PANEL ── */
+  #room-admin-bar {
+    display:none; position:fixed; bottom:0; left:50%; transform:translateX(-50%);
+    background:rgba(13,17,23,.96); border:1px solid #2a1a3e;
+    border-bottom:none; border-radius:10px 10px 0 0;
+    padding:.6rem 1.2rem; z-index:300;
+    align-items:center; gap:.8rem;
+    font-family:'Space Mono',monospace; font-size:.72rem;
+    backdrop-filter:blur(8px);
+  }
+  #room-admin-bar.show { display:flex; }
+  #room-admin-bar .ra-label { color:#aa66ff; letter-spacing:.1em; text-transform:uppercase; font-size:.65rem; }
+  #room-admin-bar select {
+    background:#111; border:1px solid #2a1a3e; color:#e0e0f0;
+    font-family:'Space Mono',monospace; font-size:.72rem;
+    padding:.35rem .6rem; border-radius:4px; outline:none;
+  }
+  #room-admin-bar button {
+    background:rgba(170,0,255,.15); border:1px solid rgba(170,0,255,.4);
+    color:#c66fff; font-family:'Space Mono',monospace; font-size:.68rem;
+    padding:.35rem .75rem; border-radius:4px; cursor:pointer; transition:background .15s;
+  }
+  #room-admin-bar button:hover { background:rgba(170,0,255,.3); }
+
   /* ── TUTORIAL OVERLAY ── */
   #tuto-overlay {
     position:fixed; inset:0; z-index:999;
@@ -183,7 +248,7 @@
   #game-picker { display:none; flex-direction:column; align-items:center; gap:1rem; width:100%; max-width:400px; margin-top:1.2rem; }
   #game-picker.show { display:flex; }
   .game-picker-title { font-family:'Space Mono',monospace; font-size:.7rem; color:var(--muted); letter-spacing:.2em; text-transform:uppercase; }
-  .game-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:.5rem; width:100%; }
+  .game-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:.4rem; width:100%; max-height:200px; overflow-y:auto; scrollbar-width:thin; scrollbar-color:var(--border) transparent; }
   .game-tile {
     background:#141414; border:1px solid var(--border); border-radius:8px;
     padding:.7rem .3rem; text-align:center; cursor:pointer;
@@ -289,15 +354,23 @@
     <div id="game-picker" class="show">
       <div class="game-picker-title">Choisis ton jeu</div>
       <div class="game-grid">
-        <div class="game-tile selected" data-game="dodge" onclick="pickGame('dodge')"><span class="gt-icon">🚀</span><span class="gt-name">Dodge</span></div>
-        <div class="game-tile" data-game="breakout" onclick="pickGame('breakout')"><span class="gt-icon">🧱</span><span class="gt-name">Breakout</span></div>
-        <div class="game-tile" data-game="memory" onclick="pickGame('memory')"><span class="gt-icon">🃏</span><span class="gt-name">Memory</span></div>
-        <div class="game-tile" data-game="quiz" onclick="pickGame('quiz')"><span class="gt-icon">❓</span><span class="gt-name">Quiz</span></div>
-        <div class="game-tile" data-game="snake" onclick="pickGame('snake')"><span class="gt-icon">🐍</span><span class="gt-name">Snake</span></div>
-        <div class="game-tile" data-game="tetris" onclick="pickGame('tetris')"><span class="gt-icon">🟦</span><span class="gt-name">Tetris</span></div>
-        <div class="game-tile" data-game="flappy" onclick="pickGame('flappy')"><span class="gt-icon">🐦</span><span class="gt-name">Flappy</span></div>
-        <div class="game-tile" data-game="bubble" onclick="pickGame('bubble')"><span class="gt-icon">🫧</span><span class="gt-name">Bubble</span></div>
-      </div>
+        <div class="game-tile selected" data-game="dodge"       onclick="pickGame('dodge')">      <span class="gt-icon">🚀</span><span class="gt-name">Dodge</span></div>
+        <div class="game-tile"          data-game="breakout"    onclick="pickGame('breakout')">   <span class="gt-icon">🧱</span><span class="gt-name">Breakout</span></div>
+        <div class="game-tile"          data-game="memory"      onclick="pickGame('memory')">     <span class="gt-icon">🃏</span><span class="gt-name">Memory</span></div>
+        <div class="game-tile"          data-game="quiz"        onclick="pickGame('quiz')">       <span class="gt-icon">❓</span><span class="gt-name">Quiz</span></div>
+        <div class="game-tile"          data-game="snake"       onclick="pickGame('snake')">      <span class="gt-icon">🐍</span><span class="gt-name">Snake</span></div>
+        <div class="game-tile"          data-game="tetris"      onclick="pickGame('tetris')">     <span class="gt-icon">🟦</span><span class="gt-name">Tetris</span></div>
+        <div class="game-tile"          data-game="flappy"      onclick="pickGame('flappy')">     <span class="gt-icon">🐦</span><span class="gt-name">Flappy</span></div>
+        <div class="game-tile"          data-game="bubble"      onclick="pickGame('bubble')">     <span class="gt-icon">🫧</span><span class="gt-name">Bubble</span></div>
+        <div class="game-tile"          data-game="pong"        onclick="pickGame('pong')">       <span class="gt-icon">🏓</span><span class="gt-name">Pong</span></div>
+        <div class="game-tile"          data-game="asteroids"   onclick="pickGame('asteroids')">  <span class="gt-icon">☄️</span><span class="gt-name">Asteroids</span></div>
+        <div class="game-tile"          data-game="simon"       onclick="pickGame('simon')">      <span class="gt-icon">🔴</span><span class="gt-name">Simon</span></div>
+        <div class="game-tile"          data-game="typing"      onclick="pickGame('typing')">     <span class="gt-icon">⌨️</span><span class="gt-name">Typing</span></div>
+        <div class="game-tile"          data-game="platformer"  onclick="pickGame('platformer')"> <span class="gt-icon">🏃</span><span class="gt-name">Platformer</span></div>
+        <div class="game-tile"          data-game="colormath"   onclick="pickGame('colormath')">  <span class="gt-icon">🎨</span><span class="gt-name">Color</span></div>
+        <div class="game-tile"          data-game="minesweeper" onclick="pickGame('minesweeper')"><span class="gt-icon">💣</span><span class="gt-name">Mines</span></div>
+        <div class="game-tile"          data-game="pacman"      onclick="pickGame('pacman')">     <span class="gt-icon">👻</span><span class="gt-name">Pac-Man</span></div>
+    </div>
     </div>
 
     <button class="btn-play" onclick="startGuest()">JOUER</button>
@@ -581,7 +654,11 @@ function applyPalette(p) {
 }
 
 // ── Private Room ──────────────────────────────────────────────
+let isRoomAdmin = false;
+let currentPrivateRoomId = null;
+
 function showPrivateModal() { document.getElementById('private-modal').classList.add('show'); }
+
 async function createPrivateRoom() {
   const r = await fetch('/api/private-room/create', {
     method:'POST', headers:{'Content-Type':'application/json'},
@@ -589,12 +666,29 @@ async function createPrivateRoom() {
   });
   const d = await r.json();
   privateRoomCode = d.code;
+  currentPrivateRoomId = d.roomId;
+  isRoomAdmin = true;
   document.getElementById('private-code').textContent = d.code;
   document.getElementById('private-room-info').style.display = 'block';
+  // Show room admin bar
+  document.getElementById('room-admin-bar').classList.add('show');
 }
+
 function copyPrivateLink() {
   navigator.clipboard.writeText(location.origin + '/join/' + privateRoomCode);
   alert('Link copied! Share it with your friends.');
+}
+
+async function roomAdminChangeGame() {
+  if (!isRoomAdmin || !currentPrivateRoomId) return;
+  const gameType = document.getElementById('ra-game-select').value;
+  await fetch('/api/private-room/change-game', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ roomId: currentPrivateRoomId, playerId: session.playerId, gameType })
+  });
+  // Also change own game locally (optional — admin can keep their own)
+  cfg = { ...cfg, type: gameType };
+  restartGame();
 }
 
 // ── WebSocket ─────────────────────────────────────────────────
@@ -757,14 +851,22 @@ function initGame() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   gameRunning = true;
   const t = cfg.type;
-  if (t==='dodge') initDodge(canvas,ctx);
-  else if (t==='breakout') initBreakout(canvas,ctx);
-  else if (t==='memory') initMemory(canvas,ctx);
-  else if (t==='quiz') initQuiz(canvas,ctx);
-  else if (t==='snake') initSnake(canvas,ctx);
-  else if (t==='tetris') initTetris(canvas,ctx);
-  else if (t==='flappy') initFlappy(canvas,ctx);
-  else if (t==='bubble') initBubble(canvas,ctx);
+  if      (t==='dodge')       initDodge(canvas,ctx);
+  else if (t==='breakout')    initBreakout(canvas,ctx);
+  else if (t==='memory')      initMemory(canvas,ctx);
+  else if (t==='quiz')        initQuiz(canvas,ctx);
+  else if (t==='snake')       initSnake(canvas,ctx);
+  else if (t==='tetris')      initTetris(canvas,ctx);
+  else if (t==='flappy')      initFlappy(canvas,ctx);
+  else if (t==='bubble')      initBubble(canvas,ctx);
+  else if (t==='pong')        initPong(canvas,ctx);
+  else if (t==='asteroids')   initAsteroids(canvas,ctx);
+  else if (t==='simon')       initSimon(canvas,ctx);
+  else if (t==='typing')      initTyping(canvas,ctx);
+  else if (t==='platformer')  initPlatformer(canvas,ctx);
+  else if (t==='colormath')   initColorMatch(canvas,ctx);
+  else if (t==='minesweeper') initMinesweeper(canvas,ctx);
+  else if (t==='pacman')      initPacman(canvas,ctx);
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1291,6 +1393,558 @@ function initBubble(canvas, ctx) {
   }
   loop();
 }
+
+// ═══════════════════════════════════════════════════════════════
+// GAME 9: PONG
+// ═══════════════════════════════════════════════════════════════
+function initPong(canvas,ctx){
+  const W=canvas.width,H=canvas.height,P=cfg.palette||{bg:'#090909',primary:'#ff3366',secondary:'#33ffcc',accent:'#ffcc00'};
+  const PW=12,PH=70,BALL=10,spd=(cfg.ballSpeed||5);
+  let py=H/2-PH/2,ay=H/2-PH/2;
+  let bx=W/2,by=H/2,bdx=(Math.random()>.5?1:-1)*spd,bdy=(Math.random()>.5?1:-1)*spd;
+  let score2=0,lives=3;
+  canvas.onmousemove=e=>{const r=canvas.getBoundingClientRect();py=Math.min(H-PH,(e.clientY-r.top)*(H/r.height)-PH/2);};
+  window.onkeydown=e=>{if(isTyping())return;if(e.key==='ArrowUp')py=Math.max(0,py-18);if(e.key==='ArrowDown')py=Math.min(H-PH,py+18);};
+  function loop(){
+    if(!gameRunning)return;
+    bx+=bdx;by+=bdy;
+    if(by<=BALL||by>=H-BALL)bdy*=-1;
+    // Player paddle
+    if(bx<=PW+BALL&&by>=py&&by<=py+PH){bdx=Math.abs(bdx);bdy+=((by-(py+PH/2))/(PH/2))*2;score2++;addScore(10);}
+    // AI paddle
+    ay+=(by-ay-PH/2)*0.08;ay=Math.max(0,Math.min(H-PH,ay));
+    if(bx>=W-PW-BALL&&by>=ay&&by<=ay+PH)bdx=-Math.abs(bdx);
+    // Miss
+    if(bx<0){lives--;if(lives<=0){gameOver('GAME OVER',`You returned ${score2} balls!`);return;}bx=W/2;by=H/2;bdx=Math.abs(spd);emitGameState({bx,by,py,ay});}
+    if(bx>W){bx=W/2;by=H/2;bdx=-Math.abs(spd);}
+    // AI difficulty scales
+    const maxSpd=spd+score2*0.04;if(Math.abs(bdx)>maxSpd){const s=maxSpd/Math.abs(bdx);bdx*=s;bdy*=s;}
+    ctx.fillStyle=P.bg;ctx.fillRect(0,0,W,H);
+    ctx.setLineDash([8,8]);ctx.strokeStyle='rgba(255,255,255,.08)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(W/2,0);ctx.lineTo(W/2,H);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle=P.secondary;ctx.shadowBlur=10;ctx.shadowColor=P.secondary;ctx.fillRect(8,py,PW,PH);
+    ctx.fillStyle=P.primary;ctx.shadowBlur=10;ctx.shadowColor=P.primary;ctx.fillRect(W-PW-8,ay,PW,PH);
+    ctx.shadowBlur=0;
+    ctx.fillStyle=P.accent;ctx.shadowBlur=14;ctx.shadowColor=P.accent;ctx.beginPath();ctx.arc(bx,by,BALL,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
+    ctx.fillStyle='rgba(255,255,255,.06)';ctx.fillRect(0,H-28,W,28);
+    for(let i=0;i<lives;i++){ctx.fillStyle=P.secondary;ctx.beginPath();ctx.arc(18+i*22,H-14,6,0,Math.PI*2);ctx.fill();}
+    ctx.fillStyle='#888';ctx.font='11px Space Mono,monospace';ctx.textAlign='right';ctx.textBaseline='middle';ctx.fillText('Mouse or ↑↓ to move',W-10,H-14);
+    emitGameState({bx,by,py,ay,lives});
+    animFrame=requestAnimationFrame(loop);
+  }
+  loop();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GAME 10: ASTEROIDS
+// ═══════════════════════════════════════════════════════════════
+function initAsteroids(canvas,ctx){
+  const W=canvas.width,H=canvas.height,P=cfg.palette||{bg:'#090909',primary:'#ff3366',secondary:'#33ffcc',accent:'#ffcc00'};
+  let ship={x:W/2,y:H/2,angle:-Math.PI/2,vx:0,vy:0,shield:180};
+  let bullets=[],asteroids=[],particles2=[],tick2=0,lives2=3;
+  const keys2={};
+  window.onkeydown=e=>{if(isTyping())return;keys2[e.key]=true;if(e.key===' '){if(bullets.length<6)bullets.push({x:ship.x,y:ship.y,vx:Math.cos(ship.angle)*10,vy:Math.sin(ship.angle)*10,life:60});}e.preventDefault();};
+  window.onkeyup=e=>{keys2[e.key]=false;};
+  function spawnAsteroid(x,y,r){const a=Math.random()*Math.PI*2;asteroids.push({x:x||(Math.random()<.5?-30:W+30),y:y||(Math.random()*H),vx:Math.cos(a)*(1+Math.random()*2),vy:Math.sin(a)*(1+Math.random()*2),r:r||40,pts:genPts(r||40)});}
+  function genPts(r){const n=8+Math.floor(Math.random()*4);return Array.from({length:n},(_,i)=>{const a=i/n*Math.PI*2,jr=r*(0.7+Math.random()*0.4);return{x:Math.cos(a)*jr,y:Math.sin(a)*jr};});}
+  for(let i=0;i<5;i++)spawnAsteroid();
+  function loop2(){
+    if(!gameRunning)return;tick2++;
+    if(keys2['ArrowLeft']||keys2['a'])ship.angle-=0.07;
+    if(keys2['ArrowRight']||keys2['d'])ship.angle+=0.07;
+    if(keys2['ArrowUp']||keys2['w']){ship.vx+=Math.cos(ship.angle)*0.25;ship.vy+=Math.sin(ship.angle)*0.25;}
+    ship.vx*=0.98;ship.vy*=0.98;
+    ship.x=(ship.x+ship.vx+W)%W;ship.y=(ship.y+ship.vy+H)%H;
+    if(ship.shield>0)ship.shield--;
+    bullets.forEach(b=>{b.x+=b.vx;b.y+=b.vy;b.life--;});
+    bullets=bullets.filter(b=>b.life>0);
+    bullets.forEach((b,bi)=>{
+      asteroids.forEach((a,ai)=>{
+        if(Math.hypot(b.x-a.x,b.y-a.y)<a.r){
+          bullets.splice(bi,1);
+          for(let i=0;i<6;i++){const ang=Math.random()*Math.PI*2;particles2.push({x:a.x,y:a.y,vx:Math.cos(ang)*3,vy:Math.sin(ang)*3,life:25,color:P.accent});}
+          if(a.r>18){spawnAsteroid(a.x,a.y,a.r*0.55);spawnAsteroid(a.x,a.y,a.r*0.55);}
+          addScore(a.r>30?50:a.r>18?100:200);
+          asteroids.splice(ai,1);
+        }
+      });
+    });
+    if(!ship.shield){
+      asteroids.forEach(a=>{
+        if(Math.hypot(ship.x-a.x,ship.y-a.y)<a.r-8){lives2--;ship.shield=120;if(lives2<=0){gameOver('DESTROYED','Asteroids won!');return;}}
+      });
+    }
+    if(asteroids.length===0)for(let i=0;i<5+Math.floor(tick2/600);i++)spawnAsteroid();
+    particles2.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.life--;});
+    particles2=particles2.filter(p=>p.life>0);
+    ctx.fillStyle=P.bg;ctx.fillRect(0,0,W,H);
+    particles2.forEach(p=>{ctx.globalAlpha=p.life/25;ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,3,0,Math.PI*2);ctx.fill();});
+    ctx.globalAlpha=1;
+    asteroids.forEach(a=>{
+      ctx.save();ctx.translate(a.x,a.y);ctx.strokeStyle=P.primary;ctx.lineWidth=1.5;ctx.shadowBlur=6;ctx.shadowColor=P.primary;
+      ctx.beginPath();a.pts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));ctx.closePath();ctx.stroke();ctx.shadowBlur=0;ctx.restore();
+    });
+    bullets.forEach(b=>{ctx.fillStyle=P.accent;ctx.shadowBlur=8;ctx.shadowColor=P.accent;ctx.beginPath();ctx.arc(b.x,b.y,3,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;});
+    ctx.save();ctx.translate(ship.x,ship.y);ctx.rotate(ship.angle+Math.PI/2);
+    if(ship.shield>0&&Math.floor(tick2/4)%2===0){ctx.strokeStyle=P.secondary+'88';ctx.lineWidth=1;ctx.beginPath();ctx.arc(0,0,20,0,Math.PI*2);ctx.stroke();}
+    ctx.fillStyle=P.secondary;ctx.shadowBlur=12;ctx.shadowColor=P.secondary;
+    ctx.beginPath();ctx.moveTo(0,-18);ctx.lineTo(12,12);ctx.lineTo(0,6);ctx.lineTo(-12,12);ctx.closePath();ctx.fill();ctx.shadowBlur=0;
+    if(keys2['ArrowUp']||keys2['w']){ctx.fillStyle=P.accent;ctx.beginPath();ctx.moveTo(0,8);ctx.lineTo(5,16);ctx.lineTo(-5,16);ctx.closePath();ctx.fill();}
+    ctx.restore();
+    ctx.fillStyle='rgba(255,255,255,.06)';ctx.fillRect(0,H-28,W,28);
+    for(let i=0;i<lives2;i++){ctx.fillStyle=P.secondary;ctx.save();ctx.translate(16+i*22,H-14);ctx.rotate(-Math.PI/2);ctx.beginPath();ctx.moveTo(0,-7);ctx.lineTo(5,5);ctx.lineTo(0,2);ctx.lineTo(-5,5);ctx.closePath();ctx.fill();ctx.restore();}
+    ctx.fillStyle='#888';ctx.font='11px Space Mono,monospace';ctx.textAlign='right';ctx.textBaseline='middle';ctx.fillText('↑ thrust · ←→ rotate · SPACE shoot',W-10,H-14);
+    animFrame=requestAnimationFrame(loop2);
+  }
+  loop2();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GAME 11: SIMON SAYS
+// ═══════════════════════════════════════════════════════════════
+function initSimon(canvas,ctx){
+  const W=canvas.width,H=canvas.height,P=cfg.palette||{bg:'#090909',primary:'#ff3366',secondary:'#33ffcc',accent:'#ffcc00'};
+  const COLORS3=['#ff3366','#33ffcc','#ffcc00','#7c3aed'];
+  const LABELS=['▲','▶','▼','◀'];
+  let sequence=[],playerSeq=[],phase='watching',lit=-1,step=0,level=0,speed3=600;
+  let flashTimeout=null;
+  const btnRegions=[];
+  const CX=W/2,CY=H/2,BR=130,BW=100,BH=80;
+  btnRegions.push({x:CX-BW/2,y:CY-BR-BH,w:BW,h:BH,i:0});
+  btnRegions.push({x:CX+BR,y:CY-BH/2,w:BH,h:BW,i:1});
+  btnRegions.push({x:CX-BW/2,y:CY+BR,w:BW,h:BH,i:2});
+  btnRegions.push({x:CX-BR-BH,y:CY-BH/2,w:BH,h:BW,i:3});
+
+  function nextLevel(){
+    level++;sequence.push(Math.floor(Math.random()*4));
+    phase='watching';step=0;
+    speed3=Math.max(200,600-level*30);
+    showNext();
+  }
+  function showNext(){
+    if(step>=sequence.length){phase='input';playerSeq=[];return;}
+    lit=sequence[step];
+    setTimeout(()=>{lit=-1;step++;setTimeout(showNext,speed3*0.4);},speed3*0.6);
+  }
+  function playerPress(i){
+    if(phase!=='input')return;
+    playerSeq.push(i);
+    lit=i;setTimeout(()=>lit=-1,150);
+    if(playerSeq[playerSeq.length-1]!==sequence[playerSeq.length-1]){gameOver('WRONG!',`Reached level ${level}`);return;}
+    if(playerSeq.length===sequence.length){addScore(level*100);setTimeout(nextLevel,600);}
+  }
+  canvas.onclick=e=>{
+    const r=canvas.getBoundingClientRect(),mx=(e.clientX-r.left)*(W/r.width),my=(e.clientY-r.top)*(H/r.height);
+    btnRegions.forEach(b=>{if(mx>=b.x&&mx<=b.x+b.w&&my>=b.y&&my<=b.y+b.h)playerPress(b.i);});
+  };
+  setTimeout(nextLevel,800);
+  function draw3(){
+    if(!gameRunning)return;
+    ctx.fillStyle=P.bg;ctx.fillRect(0,0,W,H);
+    ctx.fillStyle=P.primary;ctx.font='bold 20px Bebas Neue,sans-serif';ctx.textAlign='center';ctx.textBaseline='alphabetic';
+    ctx.fillText(`SIMON SAYS  ·  Level ${level}  ·  ${phase==='watching'?'Watch…':'Your turn!'}`,W/2,40);
+    btnRegions.forEach(b=>{
+      const active=lit===b.i;
+      ctx.fillStyle=active?COLORS3[b.i]:COLORS3[b.i]+'44';
+      ctx.shadowBlur=active?30:8;ctx.shadowColor=COLORS3[b.i];
+      ctx.beginPath();ctx.roundRect(b.x,b.y,b.w,b.h,12);ctx.fill();ctx.shadowBlur=0;
+      ctx.fillStyle=active?'#fff':COLORS3[b.i]+'aa';ctx.font='bold 26px sans-serif';
+      ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(LABELS[b.i],b.x+b.w/2,b.y+b.h/2);
+    });
+    ctx.fillStyle='rgba(255,255,255,.06)';ctx.fillRect(0,H-28,W,28);
+    ctx.fillStyle='#888';ctx.font='11px Space Mono,monospace';ctx.textAlign='left';ctx.textBaseline='middle';
+    ctx.fillText('Click the buttons in the right order',10,H-14);
+    animFrame=requestAnimationFrame(draw3);
+  }
+  draw3();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GAME 12: TYPING RACE
+// ═══════════════════════════════════════════════════════════════
+function initTyping(canvas,ctx){
+  const W=canvas.width,H=canvas.height,P=cfg.palette||{bg:'#090909',primary:'#ff3366',secondary:'#33ffcc',accent:'#ffcc00'};
+  const WORDS=['javascript','developer','keyboard','programming','algorithm','function','variable','console','browser','network','server','database','frontend','backend','render','canvas','pixel','syntax','array','object','promise','async','module','import','export'];
+  function shuffle3(a){return [...a].sort(()=>Math.random()-.5);}
+  const wordList=shuffle3(WORDS).slice(0,20);
+  let wIdx=0,typed='',mistakes=0,startTime=null,finished=false,cursor=true;
+  setInterval(()=>{cursor=!cursor;},530);
+  document.addEventListener('keydown',function handler(e){
+    if(!gameRunning){document.removeEventListener('keydown',handler);return;}
+    if(finished||isTyping()&&document.activeElement!==canvas)return;
+    const target=wordList[wIdx];
+    if(e.key==='Backspace'){typed=typed.slice(0,-1);return;}
+    if(e.key===' '||e.key==='Enter'){
+      if(typed.trim()===target){if(!startTime)startTime=Date.now();wIdx++;typed='';addScore(100+Math.max(0,50-mistakes*10));if(wIdx>=wordList.length){const wpm=Math.round(wIdx/((Date.now()-startTime)/60000));addScore(wpm*5);gameOver('FINISHED! ⌨️',`${wpm} WPM, ${mistakes} mistakes`);finished=true;}}
+      else{mistakes++;typed='';}
+      return;
+    }
+    if(e.key.length===1){if(!startTime&&typed.length===0)startTime=Date.now();typed+=e.key;}
+  });
+  function draw4(){
+    if(!gameRunning)return;
+    ctx.fillStyle=P.bg;ctx.fillRect(0,0,W,H);
+    ctx.fillStyle=P.primary;ctx.font='bold 20px Bebas Neue,sans-serif';ctx.textAlign='center';ctx.textBaseline='alphabetic';
+    ctx.fillText(`TYPING RACE  ·  ${wIdx}/${wordList.length} words  ·  ${mistakes} mistakes`,W/2,40);
+    const prog=wIdx/wordList.length;ctx.fillStyle='#1a1a1a';ctx.fillRect(20,52,W-40,5);ctx.fillStyle=P.secondary;ctx.fillRect(20,52,(W-40)*prog,5);
+    // Upcoming words
+    const ahead=wordList.slice(wIdx,wIdx+4);
+    ahead.forEach((w,i)=>{
+      ctx.fillStyle=i===0?'rgba(255,255,255,.12)':'rgba(255,255,255,.04)';ctx.shadowBlur=i===0?8:0;
+      ctx.beginPath();ctx.roundRect(W/2-180+i*92,H/2-28,86,56,8);ctx.fill();ctx.shadowBlur=0;
+      ctx.fillStyle=i===0?P.accent:'#444';ctx.font=`${i===0?16:13}px Space Mono,monospace`;ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(w,W/2-180+i*92+43,H/2);
+    });
+    // Typed so far with char-by-char coloring
+    if(wIdx<wordList.length){
+      const target=wordList[wIdx];
+      ctx.font='22px Space Mono,monospace';ctx.textAlign='center';ctx.textBaseline='alphabetic';
+      const startX=W/2-(target.length*13)/2;
+      for(let i=0;i<target.length;i++){
+        const ch=target[i],typedCh=typed[i];
+        ctx.fillStyle=typedCh===undefined?'#333':typedCh===ch?P.secondary:P.primary;
+        ctx.fillText(ch,startX+i*13+6,H/2+72);
+      }
+      // Cursor
+      if(cursor){ctx.fillStyle=P.accent;ctx.fillRect(startX+typed.length*13,H/2+50,2,26);}
+    }
+    ctx.fillStyle='rgba(255,255,255,.06)';ctx.fillRect(0,H-28,W,28);
+    ctx.fillStyle='#888';ctx.font='11px Space Mono,monospace';ctx.textAlign='left';ctx.textBaseline='middle';
+    ctx.fillText('Type the word and press SPACE',10,H-14);
+    animFrame=requestAnimationFrame(draw4);
+  }
+  draw4();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GAME 13: PLATFORMER
+// ═══════════════════════════════════════════════════════════════
+function initPlatformer(canvas,ctx){
+  const W=canvas.width,H=canvas.height,P=cfg.palette||{bg:'#090909',primary:'#ff3366',secondary:'#33ffcc',accent:'#ffcc00'};
+  const GRAV=0.5,JUMP=-11,SPD=4;
+  let px=80,py=H-80,pvx=0,pvy=0,onGround=false,level3=1,coins=[];
+  const keys3={};
+  window.onkeydown=e=>{if(isTyping())return;keys3[e.key]=true;};
+  window.onkeyup=e=>{keys3[e.key]=false;};
+  function makePlatforms(lvl){
+    const pls=[{x:0,y:H-30,w:W,h:30}];
+    const rng2=seededRandom2(lvl*999);
+    for(let i=0;i<5+lvl*2;i++){pls.push({x:50+Math.floor(rng2()*( W-150)),y:150+Math.floor(rng2()*(H-220)),w:80+Math.floor(rng2()*80),h:14});}
+    return pls;
+  }
+  function seededRandom2(s){let v=s;return()=>{v=(v*1664525+1013904223)&0xffffffff;return(v>>>0)/0xffffffff;};}
+  function makeCoins(pls){
+    return pls.slice(1).map(p=>({x:p.x+p.w/2,y:p.y-20,collected:false}));
+  }
+  let platforms=makePlatforms(level3);coins=makeCoins(platforms);
+  // Spawn point
+  const spawn=platforms[1];px=spawn.x+spawn.w/2-10;py=spawn.y-40;
+  function loop3(){
+    if(!gameRunning)return;
+    if(keys3['ArrowLeft']||keys3['a'])pvx=-SPD;
+    else if(keys3['ArrowRight']||keys3['d'])pvx=SPD;
+    else pvx*=0.7;
+    if((keys3['ArrowUp']||keys3['w']||keys3[' '])&&onGround){pvy=JUMP;onGround=false;}
+    pvy+=GRAV;px+=pvx;py+=pvy;
+    if(px<0){px=0;pvx=0;}if(px>W-24){px=W-24;pvx=0;}
+    onGround=false;
+    platforms.forEach(pl=>{
+      if(px+24>pl.x&&px<pl.x+pl.w&&py+36>pl.y&&py+36<pl.y+pl.h+pvy+2&&pvy>0){
+        py=pl.y-36;pvy=0;onGround=true;
+      }
+    });
+    if(py>H+30){px=80;py=H-80;pvy=0;addScore(-50);}
+    // Coins
+    coins.forEach(c=>{if(!c.collected&&Math.hypot(px+12-c.x,py+18-c.y)<22){c.collected=true;addScore(50);}});
+    if(coins.every(c=>c.collected)){level3++;platforms=makePlatforms(level3);coins=makeCoins(platforms);const sp2=platforms[1];px=sp2.x+sp2.w/2-10;py=sp2.y-40;addScore(200);}
+    ctx.fillStyle=P.bg;ctx.fillRect(0,0,W,H);
+    platforms.forEach(pl=>{
+      ctx.fillStyle=pl.h===30?'#1a1a1a':P.primary+'66';ctx.shadowBlur=pl.h!==30?6:0;ctx.shadowColor=P.primary;
+      ctx.beginPath();ctx.roundRect(pl.x,pl.y,pl.w,pl.h,pl.h===30?0:4);ctx.fill();ctx.shadowBlur=0;
+    });
+    coins.forEach(c=>{
+      if(c.collected)return;
+      const pulse=.7+.3*Math.sin(Date.now()/300);
+      ctx.fillStyle=P.accent;ctx.shadowBlur=10*pulse;ctx.shadowColor=P.accent;
+      ctx.beginPath();ctx.arc(c.x,c.y,8*pulse,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
+    });
+    ctx.fillStyle=P.secondary;ctx.shadowBlur=12;ctx.shadowColor=P.secondary;
+    ctx.beginPath();ctx.roundRect(px,py,24,36,4);ctx.fill();ctx.shadowBlur=0;
+    ctx.fillStyle='rgba(255,255,255,.06)';ctx.fillRect(0,H-28,W,28);
+    ctx.fillStyle='#888';ctx.font='11px Space Mono,monospace';ctx.textAlign='left';ctx.textBaseline='middle';
+    ctx.fillText(`← → move · ↑/W/SPACE jump · Level ${level3}`,10,H-14);
+    animFrame=requestAnimationFrame(loop3);
+  }
+  loop3();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GAME 14: COLOR MATCH
+// ═══════════════════════════════════════════════════════════════
+function initColorMatch(canvas,ctx){
+  const W=canvas.width,H=canvas.height,P=cfg.palette||{bg:'#090909',primary:'#ff3366',secondary:'#33ffcc',accent:'#ffcc00'};
+  const CNAMES=['Rouge','Vert','Bleu','Jaune','Violet','Orange'];
+  const CHEX=['#ff3366','#33ffcc','#4488ff','#ffcc00','#aa44ff','#ff7700'];
+  let current=null,options=[],timeLeft5=15,timerInterval5=null,streak5=0;
+  function newRound(){
+    const ti=Math.floor(Math.random()*CNAMES.length);
+    // The word shown may differ from the color it's drawn in (Stroop effect)
+    const wordIdx=Math.floor(Math.random()*CNAMES.length);
+    const colorIdx=Math.floor(Math.random()*CNAMES.length);
+    current={word:CNAMES[wordIdx],inkColor:CHEX[colorIdx],correctAnswer:CNAMES[colorIdx]};
+    const opts=new Set([current.correctAnswer]);
+    while(opts.size<4)opts.add(CNAMES[Math.floor(Math.random()*CNAMES.length)]);
+    options=[...opts].sort(()=>Math.random()-.5);
+    timeLeft5=(cfg.timeLimit||12);
+    clearInterval(timerInterval5);
+    timerInterval5=setInterval(()=>{timeLeft5--;if(timeLeft5<=0){clearInterval(timerInterval5);streak5=0;newRound();}},1000/adminSpeedMult);
+  }
+  const choiceBoxes5=[];
+  canvas.onclick=e=>{
+    const r=canvas.getBoundingClientRect(),mx=(e.clientX-r.left)*(W/r.width),my=(e.clientY-r.top)*(H/r.height);
+    choiceBoxes5.forEach(b=>{
+      if(mx>b.x&&mx<b.x+b.w&&my>b.y&&my<b.y+b.h){
+        if(b.label===current.correctAnswer){streak5++;addScore(50+streak5*20+timeLeft5*3);}
+        else streak5=0;
+        newRound();
+      }
+    });
+  };
+  newRound();
+  function draw5(){
+    if(!gameRunning)return;
+    ctx.fillStyle=P.bg;ctx.fillRect(0,0,W,H);
+    // Timer arc
+    const cx5=W-50,cy5=46,r5=28;
+    ctx.strokeStyle='#1a1a1a';ctx.lineWidth=5;ctx.beginPath();ctx.arc(cx5,cy5,r5,0,Math.PI*2);ctx.stroke();
+    ctx.strokeStyle=timeLeft5>4?P.secondary:P.primary;ctx.lineWidth=5;
+    ctx.beginPath();ctx.arc(cx5,cy5,r5,-Math.PI/2,-Math.PI/2+Math.PI*2*(timeLeft5/(cfg.timeLimit||12)));ctx.stroke();
+    ctx.fillStyle='#eee';ctx.font='bold 15px Space Mono,monospace';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(timeLeft5,cx5,cy5);
+    // Instruction
+    ctx.fillStyle=P.primary;ctx.font='13px Space Mono,monospace';ctx.textAlign='left';ctx.textBaseline='alphabetic';
+    ctx.fillText(`Quelle est la COULEUR DE L'ENCRE ? (pas le mot)  🔥 ${streak5}`,20,50);
+    // The word in its ink color
+    ctx.fillStyle=current.inkColor;ctx.shadowBlur=20;ctx.shadowColor=current.inkColor;
+    ctx.font='bold 64px Bebas Neue,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(current.word,W/2,H/2-30);ctx.shadowBlur=0;
+    // Answer buttons
+    choiceBoxes5.length=0;
+    const bW5=Math.floor((W-60)/2),bH5=52,gap5=10;
+    options.forEach((opt,i)=>{
+      const col=i%2,row=Math.floor(i/2);
+      const bx=30+col*(bW5+gap5),by=H/2+50+row*(bH5+gap5);
+      choiceBoxes5.push({x:bx,y:by,w:bW5,h:bH5,label:opt});
+      const ci=CNAMES.indexOf(opt),col2=CHEX[ci]||'#888';
+      ctx.fillStyle=col2+'22';ctx.strokeStyle=col2+'88';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.roundRect(bx,by,bW5,bH5,8);ctx.fill();ctx.stroke();
+      ctx.fillStyle=col2;ctx.font='16px Space Mono,monospace';ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(opt,bx+bW5/2,by+bH5/2);
+    });
+    ctx.textAlign='left';ctx.textBaseline='alphabetic';
+    animFrame=requestAnimationFrame(draw5);
+  }
+  draw5();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GAME 15: MINESWEEPER
+// ═══════════════════════════════════════════════════════════════
+function initMinesweeper(canvas,ctx){
+  const W=canvas.width,H=canvas.height,P=cfg.palette||{bg:'#090909',primary:'#ff3366',secondary:'#33ffcc',accent:'#ffcc00'};
+  const COLS6=16,ROWS6=12,MINES=30,CELL6=Math.floor(Math.min((W-40)/COLS6,(H-60)/ROWS6));
+  const offX6=Math.floor((W-COLS6*CELL6)/2),offY6=50;
+  let board6=[],revealed=new Set(),flagged=new Set(),gameStarted=false,minesLeft=MINES;
+  function initBoard(safe){
+    board6=Array.from({length:ROWS6},()=>Array(COLS6).fill(0));
+    let placed=0;
+    while(placed<MINES){
+      const r=Math.floor(Math.random()*ROWS6),c=Math.floor(Math.random()*COLS6);
+      if(board6[r][c]!=-1&&!(Math.abs(r-safe.r)<=1&&Math.abs(c-safe.c)<=1)){board6[r][c]=-1;placed++;}
+    }
+    for(let r=0;r<ROWS6;r++)for(let c=0;c<COLS6;c++){
+      if(board6[r][c]===-1)continue;
+      let count=0;for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){const nr=r+dr,nc=c+dc;if(nr>=0&&nr<ROWS6&&nc>=0&&nc<COLS6&&board6[nr][nc]===-1)count++;}
+      board6[r][c]=count;
+    }
+  }
+  function reveal(r,c){
+    const k=`${r},${c}`;if(revealed.has(k)||flagged.has(k))return;
+    revealed.add(k);
+    if(board6[r][c]===0){for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){const nr=r+dr,nc=c+dc;if(nr>=0&&nr<ROWS6&&nc>=0&&nc<COLS6)reveal(nr,nc);}}
+    if(board6[r][c]===-1){
+      // Reveal all mines
+      for(let r2=0;r2<ROWS6;r2++)for(let c2=0;c2<COLS6;c2++)if(board6[r2][c2]===-1)revealed.add(`${r2},${c2}`);
+      gameOver('💥 BOOM!',`Revealed ${revealed.size-MINES} safe cells`);
+    }
+    const safe=ROWS6*COLS6-MINES;
+    if(revealed.size>=safe){addScore(1000+(MINES-flagged.size)*50);gameOver('YOU WIN! 🎉','All mines avoided!');}
+    addScore(5);
+  }
+  canvas.onclick=e=>{
+    const r2=canvas.getBoundingClientRect(),mx=(e.clientX-r2.left)*(W/r2.width),my=(e.clientY-r2.top)*(H/r2.height);
+    const c=Math.floor((mx-offX6)/CELL6),r=Math.floor((my-offY6)/CELL6);
+    if(r<0||r>=ROWS6||c<0||c>=COLS6)return;
+    if(!gameStarted){gameStarted=true;initBoard({r,c});}
+    reveal(r,c);
+  };
+  canvas.oncontextmenu=e=>{
+    e.preventDefault();
+    const r2=canvas.getBoundingClientRect(),mx=(e.clientX-r2.left)*(W/r2.width),my=(e.clientY-r2.top)*(H/r2.height);
+    const c=Math.floor((mx-offX6)/CELL6),r=Math.floor((my-offY6)/CELL6);
+    if(r<0||r>=ROWS6||c<0||c>=COLS6)return;
+    const k=`${r},${c}`;if(revealed.has(k))return;
+    if(flagged.has(k)){flagged.delete(k);minesLeft++;}else{flagged.add(k);minesLeft--;}
+  };
+  const NCOLORS=['','#33ffcc','#4488ff','#ff3366','#7700ff','#ff0000','#00ffff','#000','#888'];
+  function draw6(){
+    if(!gameRunning)return;
+    ctx.fillStyle=P.bg;ctx.fillRect(0,0,W,H);
+    ctx.fillStyle=P.primary;ctx.font='bold 16px Bebas Neue,sans-serif';ctx.textAlign='center';ctx.textBaseline='alphabetic';
+    ctx.fillText(`MINESWEEPER  ·  💣 ${minesLeft} left`,W/2,32);
+    for(let r=0;r<ROWS6;r++)for(let c=0;c<COLS6;c++){
+      const k=`${r},${c}`,x=offX6+c*CELL6,y=offY6+r*CELL6,s=CELL6-2;
+      if(revealed.has(k)){
+        ctx.fillStyle=board6[r][c]===-1?P.primary+'44':'rgba(255,255,255,.05)';
+        ctx.fillRect(x+1,y+1,s,s);
+        if(board6[r][c]===-1){ctx.fillStyle='#ff0';ctx.font=`${CELL6*.6}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('💣',x+CELL6/2,y+CELL6/2);}
+        else if(board6[r][c]>0){ctx.fillStyle=NCOLORS[board6[r][c]]||'#fff';ctx.font=`bold ${CELL6*.55}px monospace`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(board6[r][c],x+CELL6/2,y+CELL6/2);}
+      } else {
+        ctx.fillStyle=flagged.has(k)?P.accent+'33':'rgba(255,255,255,.06)';
+        ctx.strokeStyle='rgba(255,255,255,.08)';ctx.lineWidth=1;
+        ctx.fillRect(x+1,y+1,s,s);ctx.strokeRect(x+1,y+1,s,s);
+        if(flagged.has(k)){ctx.font=`${CELL6*.6}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('🚩',x+CELL6/2,y+CELL6/2);}
+      }
+    }
+    ctx.fillStyle='rgba(255,255,255,.06)';ctx.fillRect(0,H-28,W,28);
+    ctx.fillStyle='#888';ctx.font='11px Space Mono,monospace';ctx.textAlign='left';ctx.textBaseline='middle';
+    ctx.fillText('Click to reveal · Right-click to flag',10,H-14);
+    animFrame=requestAnimationFrame(draw6);
+  }
+  draw6();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GAME 16: PAC-MAN STYLE
+// ═══════════════════════════════════════════════════════════════
+function initPacman(canvas,ctx){
+  const W=canvas.width,H=canvas.height,P=cfg.palette||{bg:'#090909',primary:'#ff3366',secondary:'#33ffcc',accent:'#ffcc00'};
+  const CELL7=28,COLS7=19,ROWS7=15,offX7=Math.floor((W-COLS7*CELL7)/2),offY7=Math.floor((H-ROWS7*CELL7)/2);
+  // Simple maze: 1=wall, 0=dot, 2=power, 3=empty
+  const rawMaze=[
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
+    [1,2,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,2,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,0,1],
+    [1,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,1],
+    [1,1,1,1,0,1,1,1,3,1,3,1,1,1,0,1,1,1,1],
+    [1,1,1,1,0,1,3,3,3,3,3,3,3,1,0,1,1,1,1],
+    [1,1,1,1,0,1,3,1,1,3,1,1,3,1,0,1,1,1,1],
+    [3,3,3,3,0,3,3,1,3,3,3,1,3,3,0,3,3,3,3],
+    [1,1,1,1,0,1,3,1,1,1,1,1,3,1,0,1,1,1,1],
+    [1,1,1,1,0,1,3,3,3,3,3,3,3,1,0,1,1,1,1],
+    [1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
+    [1,2,1,0,1,1,1,0,0,0,0,0,1,1,1,0,1,2,1],
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  ];
+  const maze=rawMaze.map(r=>[...r]);
+  let pac={x:9,y:9,dx:0,dy:0,ndx:1,ndy:0,mouth:0,mdir:1};
+  let ghosts=[{x:8,y:7,dx:1,dy:0,color:'#ff3366'},{x:9,y:7,dx:-1,dy:0,color:'#ff7700'},{x:10,y:7,dx:0,dy:1,color:'#aa44ff'}];
+  let powered=0,dotsLeft=0;
+  // Count dots
+  maze.forEach(row=>row.forEach(c=>{if(c===0||c===2)dotsLeft++;}));
+  window.onkeydown=e=>{
+    if(isTyping())return;
+    const map={'ArrowUp':{dx:0,dy:-1},'ArrowDown':{dx:0,dy:1},'ArrowLeft':{dx:-1,dy:0},'ArrowRight':{dx:1,dy:0},'w':{dx:0,dy:-1},'s':{dx:0,dy:1},'a':{dx:-1,dy:0},'d':{dx:1,dy:0}};
+    if(map[e.key]){pac.ndx=map[e.key].dx;pac.ndy=map[e.key].dy;e.preventDefault();}
+  };
+  let moveTick=0;
+  function canMove(x,y,dx,dy){const nx=(x+dx+COLS7)%COLS7,ny=(y+dy+ROWS7)%ROWS7;return maze[ny][nx]!==1;}
+  function loop7(){
+    if(!gameRunning)return;
+    moveTick++;if(powered>0)powered--;
+    if(moveTick%8===0){
+      if(canMove(pac.x,pac.y,pac.ndx,pac.ndy)){pac.dx=pac.ndx;pac.dy=pac.ndy;}
+      if(canMove(pac.x,pac.y,pac.dx,pac.dy)){pac.x=(pac.x+pac.dx+COLS7)%COLS7;pac.y=(pac.y+pac.dy+ROWS7)%ROWS7;}
+      const cell=maze[pac.y][pac.x];
+      if(cell===0){maze[pac.y][pac.x]=3;dotsLeft--;addScore(10);}
+      if(cell===2){maze[pac.y][pac.x]=3;dotsLeft--;powered=200;addScore(50);}
+      if(dotsLeft<=0)gameOver('YOU WIN! 🟡','All dots eaten!');
+      // Ghosts move
+      ghosts.forEach(g=>{
+        if(moveTick%12===0){
+          const dirs=[{dx:1,dy:0},{dx:-1,dy:0},{dx:0,dy:1},{dx:0,dy:-1}].filter(d=>canMove(g.x,g.y,d.dx,d.dy)&&!(d.dx===-g.dx&&d.dy===-g.dy));
+          if(dirs.length){const d=dirs[Math.floor(Math.random()*dirs.length)];g.dx=d.dx;g.dy=d.dy;}
+          g.x=(g.x+g.dx+COLS7)%COLS7;g.y=(g.y+g.dy+ROWS7)%ROWS7;
+        }
+        if(g.x===pac.x&&g.y===pac.y){
+          if(powered>0){addScore(200);g.x=9;g.y=7;}
+          else gameOver('GOT EATEN! 👻',`Ate ${Math.floor(score/10)} dots`);
+        }
+      });
+    }
+    pac.mouth+=0.18*pac.mdir;if(pac.mouth>=0.25||pac.mouth<=0)pac.mdir*=-1;
+    ctx.fillStyle=P.bg;ctx.fillRect(0,0,W,H);
+    // Draw maze
+    maze.forEach((row,r)=>row.forEach((cell,c)=>{
+      const x=offX7+c*CELL7,y=offY7+r*CELL7;
+      if(cell===1){ctx.fillStyle='#1a1a4a';ctx.strokeStyle=P.primary+'44';ctx.lineWidth=1;ctx.fillRect(x,y,CELL7,CELL7);ctx.strokeRect(x,y,CELL7,CELL7);}
+      else if(cell===0){ctx.fillStyle=P.secondary;ctx.beginPath();ctx.arc(x+CELL7/2,y+CELL7/2,3,0,Math.PI*2);ctx.fill();}
+      else if(cell===2){const pulse=.7+.3*Math.sin(Date.now()/200);ctx.fillStyle=P.accent;ctx.shadowBlur=10;ctx.shadowColor=P.accent;ctx.beginPath();ctx.arc(x+CELL7/2,y+CELL7/2,7*pulse,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;}
+    }));
+    // Draw ghosts
+    ghosts.forEach(g=>{
+      const gx=offX7+g.x*CELL7+CELL7/2,gy=offY7+g.y*CELL7+CELL7/2,gr=CELL7*0.42;
+      ctx.fillStyle=powered>0?'#4488ff':g.color;ctx.shadowBlur=8;ctx.shadowColor=ctx.fillStyle;
+      ctx.beginPath();ctx.arc(gx,gy-gr*.1,gr,Math.PI,0);ctx.lineTo(gx+gr,gy+gr*.9);
+      for(let i=3;i>=0;i--)ctx.quadraticCurveTo(gx+gr*(1-i*.5-.25),gy+gr*(i%2===0?.9:.5),gx+gr*(1-i*.5-.5),gy+gr*.9);
+      ctx.closePath();ctx.fill();ctx.shadowBlur=0;
+      if(!powered){ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(gx-gr*.3,gy-gr*.1,gr*.22,0,Math.PI*2);ctx.arc(gx+gr*.3,gy-gr*.1,gr*.22,0,Math.PI*2);ctx.fill();}
+    });
+    // Draw pac-man
+    const px7=offX7+pac.x*CELL7+CELL7/2,py7=offY7+pac.y*CELL7+CELL7/2,pr=CELL7*0.42;
+    const angle7=Math.atan2(pac.dy,pac.dx)||0;
+    ctx.fillStyle=P.accent;ctx.shadowBlur=12;ctx.shadowColor=P.accent;
+    ctx.beginPath();ctx.moveTo(px7,py7);ctx.arc(px7,py7,pr,angle7+pac.mouth,angle7+Math.PI*2-pac.mouth);ctx.closePath();ctx.fill();ctx.shadowBlur=0;
+    ctx.fillStyle='rgba(255,255,255,.06)';ctx.fillRect(0,H-28,W,28);
+    ctx.fillStyle='#888';ctx.font='11px Space Mono,monospace';ctx.textAlign='left';ctx.textBaseline='middle';
+    ctx.fillText(`← → ↑ ↓ to move · Power: ${powered>0?Math.ceil(powered/20)+'s':'OFF'}`,10,H-14);
+    animFrame=requestAnimationFrame(loop7);
+  }
+  loop7();
+}
 </script>
+<div id="room-admin-bar">
+  <span class="ra-label">👑 Room Admin</span>
+  <select id="ra-game-select">
+    <option value="dodge">🚀 Dodge</option>
+    <option value="breakout">🧱 Breakout</option>
+    <option value="memory">🃏 Memory</option>
+    <option value="quiz">❓ Quiz</option>
+    <option value="snake">🐍 Snake</option>
+    <option value="tetris">🟦 Tetris</option>
+    <option value="flappy">🐦 Flappy</option>
+    <option value="bubble">🫧 Bubble</option>
+    <option value="pong">🏓 Pong</option>
+    <option value="asteroids">☄️ Asteroids</option>
+    <option value="simon">🔴 Simon</option>
+    <option value="typing">⌨️ Typing</option>
+    <option value="platformer">🏃 Platformer</option>
+    <option value="colormath">🎨 ColorMatch</option>
+    <option value="minesweeper">💣 Mines</option>
+    <option value="pacman">👻 Pac-Man</option>
+  </select>
+  <button onclick="roomAdminChangeGame()">Changer le jeu des membres</button>
+</div>
+
+<footer class="site-footer">
+  <a href="/about">À propos</a>
+  <a href="/how-to-play">Comment jouer</a>
+  <a href="/fractales">Fractales</a>
+  <a href="/gravite">Gravité</a>
+  <a href="/fluide">Fluide</a>
+  <a href="/synthetiseur">Synthétiseur</a>
+  <a href="/samegame-online">SameGame en ligne</a>
+</footer>
+
 </body>
 </html>
