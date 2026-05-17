@@ -1794,11 +1794,14 @@ function initPlatformer(canvas,ctx){
     {title:'LEVEL 1\nTHE RUINS',text:'The lower floors are crumbling.\nCollect the data shards.\nReach the exit portal.',btn:'CLIMB'},
   ];
   let storyIdx=0,showingStory=true;
+  // Restore saved level — skip story if resuming
+  const savedLevel=parseInt(localStorage.getItem('echo_level')||'1');
+  if(savedLevel>1){showingStory=false;}
 
   // ── Physics & player ──────────────────────────────────────────
   const GRAV=0.42,JUMP=-13,SPD=4.2;
   let px,py,pvx,pvy,onGround,facing,jetpack,jpFuel;
-  let level=1,shards=0,totalShards=0;
+  let level=savedLevel,shards=0,totalShards=0;
   let platforms=[],collectibles=[],enemies=[],particles3=[];
   let cameraY=0; // scrolls up as player climbs
   const keys4={};
@@ -1831,7 +1834,7 @@ function initPlatformer(canvas,ctx){
     for(let i=0;i<28+lvl*4;i++){
       const w=70+Math.floor(rng()*100);
       const x=20+Math.floor(rng()*(W-w-40));
-      lastY-=55+Math.floor(rng()*55);
+      lastY-=40+Math.floor(rng()*40); // max 80px gap — always reachable with JUMP=-13
       const type=rng()<0.12?'crumble':rng()<0.08?'bounce':'normal';
       platforms.push({x,y:lastY,w,h:14,type,crumbleTimer:0,crumbled:false});
       // Shard on some platforms
@@ -1857,13 +1860,9 @@ function initPlatformer(canvas,ctx){
   // ── Story screen drawing ──────────────────────────────────────
   function drawStory(){
     ctx.fillStyle='#0a0015';ctx.fillRect(0,0,W,H);
-    // Starfield
     ctx.fillStyle='rgba(255,255,255,.5)';
     for(let i=0;i<80;i++){const sx=(i*137+13)%W,sy=(i*97+7)%H;ctx.fillRect(sx,sy,i%3===0?2:1,i%3===0?2:1);}
-    // Glowing tower silhouette
-    ctx.fillStyle='rgba(51,255,204,.04)';
-    ctx.fillRect(W/2-50,H*0.1,100,H*0.85);
-    // Title
+    ctx.fillStyle='rgba(51,255,204,.04)';ctx.fillRect(W/2-50,H*0.1,100,H*0.85);
     const s=STORY[storyIdx];
     const lines=s.title.split('\n');
     ctx.font='bold '+(lines.length>1?'28':'40')+'px Bebas Neue,sans-serif';
@@ -1873,21 +1872,33 @@ function initPlatformer(canvas,ctx){
       ctx.fillStyle='#33ffcc';ctx.fillText(l,W/2,H*0.2+i*38);
     });
     ctx.shadowBlur=0;
-    // Body text
     const body=s.text.split('\n');
     ctx.font='14px Space Mono,monospace';ctx.fillStyle='rgba(255,255,255,.7)';
     body.forEach((l,i)=>ctx.fillText(l,W/2,H*0.42+i*24));
-    // Animated robot
     drawRobotIdle(W/2,H*0.65,(Date.now()/600)%1);
-    // Button
-    const bx=W/2-70,by2=H*0.8;
-    const hov=false;
+    // Start button
     ctx.fillStyle='rgba(51,255,204,.15)';ctx.strokeStyle='#33ffcc';ctx.lineWidth=1.5;
     ctx.shadowBlur=12;ctx.shadowColor='#33ffcc';
-    ctx.beginPath();ctx.roundRect(bx,by2,140,40,6);ctx.fill();ctx.stroke();ctx.shadowBlur=0;
-    ctx.fillStyle='#33ffcc';ctx.font='bold 16px Bebas Neue,sans-serif';ctx.letterSpacing='.15em';
-    ctx.fillText(s.btn,W/2,by2+26);
-    canvas.onclick=()=>{canvas.onclick=null;showingStory=false;loop4();};
+    ctx.beginPath();ctx.roundRect(W/2-70,H*0.8,140,40,6);ctx.fill();ctx.stroke();ctx.shadowBlur=0;
+    ctx.fillStyle='#33ffcc';ctx.font='bold 16px Bebas Neue,sans-serif';
+    ctx.fillText(s.btn,W/2,H*0.8+26);
+    // Reset button (small, bottom right)
+    ctx.fillStyle='rgba(255,51,102,.1)';ctx.strokeStyle='rgba(255,51,102,.4)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.roundRect(W-130,H-38,120,28,4);ctx.fill();ctx.stroke();
+    ctx.fillStyle='rgba(255,51,102,.7)';ctx.font='11px Space Mono,monospace';
+    ctx.fillText('Reset progress',W-70,H-20);
+    canvas.onclick=e=>{
+      const r=canvas.getBoundingClientRect();
+      const mx=(e.clientX-r.left)*(W/r.width),my=(e.clientY-r.top)*(H/r.height);
+      // Reset button
+      if(mx>W-130&&my>H-38){
+        localStorage.removeItem('echo_level');
+        level=1;storyIdx=0;buildLevel(1);showingStory=false;
+        canvas.onclick=null;return;
+      }
+      // Start button
+      canvas.onclick=null;showingStory=false;
+    };
   }
 
   function drawRobotIdle(x,y,t){
@@ -1949,6 +1960,7 @@ function initPlatformer(canvas,ctx){
       if(c.type==='portal'){
         if(Math.hypot(px-c.x,py-c.y)<32){
           c.collected=true;level++;
+          localStorage.setItem('echo_level', level); // save progress
           storyIdx=Math.min(storyIdx+1,STORY.length-1);
           addScore(500+shards*50);
           buildLevel(level);
@@ -2090,6 +2102,8 @@ function initPlatformer(canvas,ctx){
     ctx.fillText('← → move  ↑/W/SPACE jump',W/2,20);
     ctx.textAlign='right';ctx.fillStyle='rgba(51,255,204,.5)';
     ctx.fillText(`ECHO'S ASCENT`,W-10,20);
+    ctx.fillStyle='rgba(51,255,204,.25)';ctx.font='10px Space Mono,monospace';
+    ctx.fillText('💾 auto-saved',W-10,32);
 
     animFrame=requestAnimationFrame(loop4);
   }
