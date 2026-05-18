@@ -1855,7 +1855,7 @@ function initPlatformer(canvas,ctx){
 
   function seededRngP(s){let v=s;return()=>{v=(v*1664525+1013904223)&0xffffffff;return(v>>>0)/0xffffffff;};}
 
-  buildLevel(1);
+  buildLevel(savedLevel);
 
   // ── Story screen drawing ──────────────────────────────────────
   function drawStory(){
@@ -1917,6 +1917,22 @@ function initPlatformer(canvas,ctx){
   }
 
   // ── Main game loop ────────────────────────────────────────────
+  // Respawn at current level (not level 1)
+  function respawnAtLevel(){
+    buildLevel(level); // rebuilds platforms, resets player position
+    // brief flash overlay
+    const flashStart=Date.now();
+    const flash=()=>{
+      const elapsed=Date.now()-flashStart;
+      if(elapsed<600){
+        ctx.fillStyle=`rgba(255,51,102,${0.5*(1-elapsed/600)})`;
+        ctx.fillRect(0,0,canvas.width,canvas.height);
+        requestAnimationFrame(flash);
+      }
+    };
+    flash();
+  }
+
   function loop4(){
     if(!gameRunning)return;
     if(showingStory){drawStory();animFrame=requestAnimationFrame(loop4);return;}
@@ -1981,13 +1997,13 @@ function initPlatformer(canvas,ctx){
         pvy=JUMP*0.7;en.hp--;addScore(150);
         if(en.hp<=0){for(let i=0;i<12;i++){const a=Math.random()*Math.PI*2;particles3.push({x:en.x+9,y:en.y+9,vx:Math.cos(a)*4,vy:Math.sin(a)*4,life:28,color:'#ff3366'});}en.hp=-99;}
       } else if(Math.hypot(px-en.x-9,py-en.y-9)<18&&en.hp>0){
-        gameOver('REBOOTING…',`Echo reached level ${level} · ${shards} shards`);return;
+        respawnAtLevel();return;
       }
     });
     enemies=enemies.filter(e=>e.hp>0);
 
     // Fall off bottom of world
-    if(py>H+200){gameOver('ECHO FELL',`Reached level ${level}`);}
+    if(py>H+200){respawnAtLevel();return;}
 
     particles3.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=0.1;p.life--;});
     particles3=particles3.filter(p=>p.life>0);
